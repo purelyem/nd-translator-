@@ -1,0 +1,13 @@
+{
+  "name": "nd-perspective-translator",
+  "version": "1.0.0",
+  "description": "Neurodivergent Perspective Translator — powered by Claude",
+  "private": true,
+  "scripts": {
+    "dev": "netlify dev",
+    "build": "echo 'Static site — no build step needed.'"
+  },
+  "devDependencies": {
+    "netlify-cli": "^17.0.0"
+  }
+}
