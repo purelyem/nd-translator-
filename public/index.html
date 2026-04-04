@@ -1,15 +1,208 @@
-ND Translator
-10 cognitive lenses for any content
-About
-Translate anything into how you think.
-Paste a concept, question, paragraph, or lecture. Get it back reframed in 10 different cognitive styles — built for neurodivergent minds.
-YOUR CONTENT
-0 / 8,000
-Generate
-          all 10 perspectives
-          selected perspectives
-        
-Clear
-Translate ↗
-Built for neurodivergent communities. Powered by Claude (Anthropic).
-View source on GitHub · Contact
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Neurodivergent Perspective Translator</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root { --bg: #FAFAF8; --surface: #FFFFFF; --surface2: #F3F2EE; --border: #E5E3DC; --border-strong: #C8C5BB; --text: #1A1916; --text-2: #5A5751; --text-3: #9A968E; --accent: #2D5A3D; --radius: 12px; --radius-sm: 8px; }
+    @media (prefers-color-scheme: dark) { :root { --bg: #141412; --surface: #1E1D1A; --surface2: #252420; --border: #302E28; --border-strong: #4A4740; --text: #F0EDE6; --text-2: #A09C93; --text-3: #6A6660; --accent: #7EC99A; } }
+    body { font-family: system-ui, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; font-size: 16px; line-height: 1.6; }
+    header { border-bottom: 1px solid var(--border); padding: 0 2rem; }
+    .header-inner { max-width: 900px; margin: 0 auto; padding: 1.25rem 0; display: flex; align-items: baseline; gap: 1rem; }
+    .logo { font-size: 15px; font-weight: 500; } .logo span { color: var(--accent); }
+    .tagline { font-size: 13px; color: var(--text-3); }
+    main { max-width: 900px; margin: 0 auto; padding: 2.5rem 2rem 4rem; }
+    .intro { margin-bottom: 2rem; }
+    .intro h1 { font-size: 28px; font-weight: 300; letter-spacing: -0.02em; line-height: 1.3; margin-bottom: 0.5rem; }
+    .intro h1 em { font-style: italic; }
+    .intro p { font-size: 15px; color: var(--text-2); max-width: 600px; }
+    .input-section { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem; margin-bottom: 2rem; }
+    label.field-label { display: block; font-size: 12px; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-3); margin-bottom: 0.5rem; }
+    textarea { width: 100%; min-height: 140px; font-family: inherit; font-size: 15px; color: var(--text); background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 12px 14px; resize: vertical; line-height: 1.65; }
+    textarea:focus { outline: none; border-color: var(--border-strong); }
+    textarea::placeholder { color: var(--text-3); font-style: italic; }
+    .char-count { font-size: 12px; color: var(--text-3); text-align: right; margin-top: 6px; }
+    .action-row { display: flex; align-items: center; justify-content: space-between; margin-top: 1.25rem; flex-wrap: wrap; gap: 0.75rem; }
+    .btn-group { display: flex; gap: 8px; }
+    button { font-family: inherit; font-size: 14px; font-weight: 500; cursor: pointer; border-radius: var(--radius-sm); padding: 9px 20px; border: 1px solid var(--border); background: var(--surface2); color: var(--text-2); }
+    button:hover { border-color: var(--border-strong); color: var(--text); }
+    button:disabled { opacity: 0.4; cursor: not-allowed; }
+    button.primary { background: var(--text); color: var(--bg); border-color: transparent; }
+    .status-bar { display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--text-2); min-height: 20px; margin-bottom: 1.5rem; }
+    .status-bar.error { color: #B03030; }
+    .progress-track { flex: 1; max-width: 200px; height: 3px; background: var(--border); border-radius: 2px; overflow: hidden; }
+    .progress-fill { height: 100%; background: var(--accent); border-radius: 2px; width: 0%; transition: width 0.3s ease; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(380px, 1fr)); gap: 1rem; }
+    @media (max-width: 600px) { .grid { grid-template-columns: 1fr; } main { padding: 1.5rem 1rem 3rem; } }
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.25rem; display: flex; flex-direction: column; gap: 0.75rem; }
+    .card.active { border-color: var(--border-strong); }
+    .card-header { display: flex; align-items: flex-start; gap: 10px; }
+    .card-dot { width: 10px; height: 10px; border-radius: 50%; margin-top: 5px; flex-shrink: 0; }
+    .card-meta { flex: 1; } .card-title { font-size: 13px; font-weight: 500; } .card-sub { font-size: 12px; color: var(--text-3); margin-top: 1px; }
+    .card-body { font-size: 14px; color: var(--text-2); line-height: 1.7; flex: 1; white-space: pre-wrap; }
+    .card-body.placeholder { color: var(--text-3); font-style: italic; font-size: 13px; white-space: normal; }
+    .typing-dots { display: inline-flex; gap: 3px; align-items: center; }
+    .typing-dots span { width: 5px; height: 5px; border-radius: 50%; background: var(--text-3); animation: bounce 1.2s infinite; }
+    .typing-dots span:nth-child(2) { animation-delay: 0.2s; } .typing-dots span:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes bounce { 0%, 80%, 100% { transform: translateY(0); opacity: 0.4; } 40% { transform: translateY(-4px); opacity: 1; } }
+    .card-actions { display: flex; gap: 6px; border-top: 1px solid var(--border); padding-top: 0.75rem; }
+    .card-actions button { font-size: 12px; padding: 5px 12px; }
+    footer { border-top: 1px solid var(--border); padding: 1.5rem 2rem; text-align: center; font-size: 12px; color: var(--text-3); }
+  </style>
+</head>
+<body>
+<header>
+  <div class="header-inner">
+    <div class="logo">ND <span>Translator</span></div>
+    <div class="tagline">10 cognitive lenses for any content</div>
+  </div>
+</header>
+<main>
+  <div class="intro">
+    <h1>Translate anything into <em>how you think.</em></h1>
+    <p>Paste a concept, question, paragraph, or lecture. Get it back reframed in 10 different cognitive styles built for neurodivergent minds.</p>
+  </div>
+  <div class="input-section">
+    <label class="field-label">Your content</label>
+    <textarea id="input-text" placeholder="Paste anything here..." oninput="updateCharCount()" maxlength="8000"></textarea>
+    <div class="char-count" id="char-count">0 / 8,000</div>
+    <div class="action-row">
+      <span style="font-size:13px;color:var(--text-2);">Generate all 10 perspectives</span>
+      <div class="btn-group">
+        <button onclick="clearAll()">Clear</button>
+        <button class="primary" id="go-btn" onclick="runTranslate()">Translate</button>
+      </div>
+    </div>
+  </div>
+  <div class="status-bar" id="status-bar" style="display:none;">
+    <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
+    <span id="status-text"></span>
+  </div>
+  <div class="grid" id="grid"></div>
+</main>
+<footer>Built for neurodivergent communities. Powered by Claude (Anthropic).</footer>
+<script>
+var P = [
+  {id:"visual",color:"#2A9D5C",title:"Visual / spatial thinker",sub:"Metaphors, spatial relationships",prompt:"Reframe this for a visual/spatial thinker. Use vivid spatial metaphors and describe relationships as physical structures or maps. Make the reader see it in their mind. Use imagine and picture language throughout."},
+  {id:"pattern",color:"#7F77DD",title:"Pattern seeker",sub:"Rules, systems, structures",prompt:"Reframe this for a pattern-seeker. Identify the underlying rules, recurring structures, and systems at play. Name the pattern explicitly. Show what repeats, what varies, and why."},
+  {id:"hyperfocus",color:"#378ADD",title:"Hyperfocus / deep dive",sub:"Maximum detail, nothing simplified",prompt:"Reframe this for a hyperfocus learner who wants the deepest possible exploration. Do not simplify anything. Provide all nuance, edge cases, exceptions, and technical detail. Longer and denser is better."},
+  {id:"sensory",color:"#D85A30",title:"Sensory / concrete",sub:"Real-world examples, tangible",prompt:"Reframe this for someone who needs concrete sensory-grounded explanations. Use real-world physical examples. No abstract concepts without a tangible anchor. Always start with the example then name the concept."},
+  {id:"adhd",color:"#C05080",title:"ADHD / attention variable",sub:"Chunked, brief, bullet-point ready",prompt:"Reframe this for someone with variable attention. Use very short bullet points, one idea per bullet, max 15 words each. Add a one-line TLDR at the very top. Keep it scannable in under 30 seconds."},
+  {id:"rsd",color:"#B07820",title:"Rejection sensitive",sub:"Warm, encouraging, no judgment",prompt:"Reframe this with warm encouraging non-judgmental language. Assume the reader may feel anxious about not understanding. Celebrate curiosity. Avoid words like obviously simply just easy or basic. End with encouragement."},
+  {id:"literal",color:"#3A9060",title:"Literal processor",sub:"No idioms, everything explicit",prompt:"Reframe this for a literal processor. No idioms, no metaphors, no implied meaning. Say exactly what you mean. Be explicit about every step, every assumption, and every logical connection."},
+  {id:"bigpicture",color:"#185FA5",title:"Big picture / systems thinker",sub:"Why it matters, larger context",prompt:"Reframe this for someone who needs the big picture first. Start with why this matters in the grand scheme. Show how it connects to larger systems or ideas. Answer what problem does this solve and what is its broader significance."},
+  {id:"narrative",color:"#A03030",title:"Narrative processor",sub:"Story format, chronological",prompt:"Reframe this as a story with a clear beginning, middle, and end. Use chronological order. Introduce characters or actors, even abstract concepts can be personified. Use storytelling language like first, then, until finally."},
+  {id:"question",color:"#606060",title:"Question-based learner",sub:"Q and A format, curiosity-driven",prompt:"Reframe this as a series of questions and answers. Start with the most natural question someone new to this would ask. Answer it, then ask the next question that naturally follows. Format as Q: then A:"}
+];
+
+function buildGrid() {
+  var g = document.getElementById('grid');
+  g.innerHTML = '';
+  P.forEach(function(p) {
+    var c = document.createElement('div');
+    c.className = 'card'; c.id = 'card-'+p.id;
+    c.innerHTML = '<div class="card-header"><div class="card-dot" style="background:'+p.color+'"></div><div class="card-meta"><div class="card-title">'+p.title+'</div><div class="card-sub">'+p.sub+'</div></div></div><div class="card-body placeholder" id="body-'+p.id+'">Waiting for content...</div><div class="card-actions" id="actions-'+p.id+'" style="display:none;"><button onclick="doCopy(\''+p.id+'\')">Copy</button><button onclick="doRegen(\''+p.id+'\')">Regenerate</button></div>';
+    g.appendChild(c);
+  });
+}
+
+function updateCharCount() {
+  document.getElementById('char-count').textContent = document.getElementById('input-text').value.length + ' / 8,000';
+}
+
+function clearAll() {
+  document.getElementById('input-text').value = ''; updateCharCount();
+  P.forEach(function(p) {
+    document.getElementById('body-'+p.id).className = 'card-body placeholder';
+    document.getElementById('body-'+p.id).textContent = 'Waiting for content...';
+    document.getElementById('actions-'+p.id).style.display = 'none';
+    document.getElementById('card-'+p.id).className = 'card';
+  });
+  document.getElementById('status-bar').style.display = 'none';
+}
+
+function setStatus(msg, show, err) {
+  var b = document.getElementById('status-bar');
+  b.style.display = show ? 'flex' : 'none';
+  b.className = 'status-bar' + (err ? ' error' : '');
+  document.getElementById('status-text').textContent = msg;
+}
+
+function setProg(done, total) {
+  document.getElementById('progress-fill').style.width = (total ? done/total*100 : 0) + '%';
+}
+
+function callAPI(p, content) {
+  return fetch('/.netlify/functions/translate', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({prompt: p.prompt, content: content})
+  }).then(function(r) {
+    return r.json().then(function(d) {
+      if (!r.ok) throw new Error(d.error || 'Server error');
+      return d.result;
+    });
+  });
+}
+
+function setLoading(id) {
+  var b = document.getElementById('body-'+id);
+  b.className = 'card-body placeholder';
+  b.innerHTML = '<div class="typing-dots"><span></span><span></span><span></span></div>';
+  document.getElementById('actions-'+id).style.display = 'none';
+  document.getElementById('card-'+id).className = 'card active';
+}
+
+function setResult(id, text) {
+  var b = document.getElementById('body-'+id);
+  b.className = 'card-body'; b.textContent = text;
+  document.getElementById('actions-'+id).style.display = 'flex';
+  document.getElementById('card-'+id).className = 'card';
+}
+
+function setError(id, msg) {
+  var b = document.getElementById('body-'+id);
+  b.className = 'card-body placeholder'; b.textContent = 'Error: ' + msg;
+  document.getElementById('card-'+id).className = 'card';
+}
+
+function runTranslate() {
+  var content = document.getElementById('input-text').value.trim();
+  if (!content) { setStatus('Please paste some content first.', true, true); return; }
+  var btn = document.getElementById('go-btn');
+  btn.disabled = true;
+  var done = 0; var total = P.length;
+  setStatus('Translating 0 of ' + total + '...', true, false);
+  setProg(0, total);
+  P.forEach(function(p) { setLoading(p.id); });
+  Promise.all(P.map(function(p) {
+    return callAPI(p, content).then(function(text) {
+      setResult(p.id, text); done++;
+      setProg(done, total);
+      setStatus('Translated ' + done + ' of ' + total + '...', true, false);
+    }).catch(function(err) { setError(p.id, err.message || 'Error'); done++; setProg(done, total); });
+  })).then(function() {
+    setStatus('All done!', true, false);
+    setTimeout(function() { setStatus('', false); }, 4000);
+    btn.disabled = false;
+  });
+}
+
+function doRegen(id) {
+  var content = document.getElementById('input-text').value.trim();
+  if (!content) { alert('Please paste content first.'); return; }
+  var p = P.find(function(x) { return x.id === id; });
+  setLoading(id);
+  callAPI(p, content).then(function(t) { setResult(id, t); }).catch(function(e) { setError(id, e.message); });
+}
+
+function doCopy(id) {
+  navigator.clipboard.writeText(document.getElementById('body-'+id).innerText);
+}
+
+buildGrid();
+</script>
+</body>
+</html>
