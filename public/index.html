@@ -69,13 +69,7 @@
     <textarea id="input-text" placeholder="Paste anything here..." oninput="updateCharCount()" maxlength="8000"></textarea>
     <div class="char-count" id="char-count">0 / 8,000</div>
     <div class="action-row">
-      <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text-2);">
-        <span>Generate</span>
-        <select id="mode-select" style="font-family:inherit;font-size:13px;background:var(--surface2);color:var(--text);border:1px solid var(--border);border-radius:var(--radius-sm);padding:6px 10px;">
-          <option value="all">all 10 perspectives</option>
-          <option value="select">selected perspectives</option>
-        </select>
-      </div>
+      <span style="font-size:13px;color:var(--text-2);">Check the perspectives you want</span>
       <div class="btn-group">
         <button onclick="clearAll()">Clear</button>
         <button class="primary" id="go-btn" onclick="runTranslate()">Translate</button>
@@ -91,7 +85,7 @@
 <footer>
   Built for neurodivergent communities. Powered by Claude (Anthropic).
   <br><br>
-  <a href="https://venmo.com/code?user_id=3284070901481472456&created=1775335136.2637138&printed=1" target="_blank" rel="noopener" style="display:inline-block;background:#008CFF;color:#fff;font-size:15px;font-weight:500;padding:14px 28px;border-radius:10px;text-decoration:none;margin-top:8px;">This is a free tool that costs ~$0.01 per use to run. If it helped you, please contribute what you can — Click Here!</a>
+  <a href="https://paypal.me/NPTdonate?country.x=US&locale.x=en_US" target="_blank" rel="noopener" style="display:inline-block;background:#008CFF;color:#fff;font-size:15px;font-weight:500;padding:14px 28px;border-radius:10px;text-decoration:none;margin-top:8px;">This is a free tool that costs ~$0.01 per use to run. If it helped you, please contribute what you can — Click Here!</a>
 </footer>
 <script>
 var P = [
@@ -113,14 +107,8 @@ function buildGrid() {
   P.forEach(function(p) {
     var c = document.createElement('div');
     c.className = 'card'; c.id = 'card-'+p.id;
-    c.innerHTML = '<div class="card-header"><div class="card-dot" style="background:'+p.color+'"></div><div class="card-meta"><div class="card-title">'+p.title+'</div><div class="card-sub">'+p.sub+'</div></div><input type="checkbox" id="chk-'+p.id+'" checked style="margin-left:auto;cursor:pointer;display:none;" onchange="toggleP(\''+p.id+'\',this.checked)"/></div><div class="card-body placeholder" id="body-'+p.id+'">Waiting for content...</div><div class="card-actions" id="actions-'+p.id+'" style="display:none;"><button onclick="doCopy(\''+p.id+'\')">Copy</button><button onclick="doRegen(\''+p.id+'\')">Regenerate</button></div>';
+    c.innerHTML = '<div class="card-header"><div class="card-dot" style="background:'+p.color+'"></div><div class="card-meta"><div class="card-title">'+p.title+'</div><div class="card-sub">'+p.sub+'</div></div><input type="checkbox" id="chk-'+p.id+'" checked style="margin-left:auto;cursor:pointer;width:18px;height:18px;" onchange="toggleP(\''+p.id+'\',this.checked)"/></div><div class="card-body placeholder" id="body-'+p.id+'">Waiting for content...</div><div class="card-actions" id="actions-'+p.id+'" style="display:none;"><button onclick="doCopy(\''+p.id+'\')">Copy</button><button onclick="doRegen(\''+p.id+'\')">Regenerate</button></div>';
     g.appendChild(c);
-  });
-  document.getElementById('mode-select').addEventListener('change', function() {
-    var show = this.value === 'select';
-    P.forEach(function(p) {
-      document.getElementById('chk-'+p.id).style.display = show ? 'block' : 'none';
-    });
   });
 }
 
@@ -190,9 +178,8 @@ function setError(id, msg) {
 function runTranslate() {
   var content = document.getElementById('input-text').value.trim();
   if (!content) { setStatus('Please paste some content first.', true, true); return; }
-  var mode = document.getElementById('mode-select').value;
-  var toRun = mode === 'select' ? P.filter(function(p){return selected.has(p.id);}) : P;
-  if (toRun.length === 0) { setStatus('Please select at least one perspective.', true, true); return; }
+  var toRun = P.filter(function(p){return selected.has(p.id);});
+  if (toRun.length === 0) { setStatus('Please check at least one perspective.', true, true); return; }
   var btn = document.getElementById('go-btn');
   btn.disabled = true;
   var done = 0; var total = toRun.length;
