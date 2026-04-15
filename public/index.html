@@ -107,12 +107,12 @@ function buildGrid() {
   P.forEach(function(p) {
     var c = document.createElement('div');
     c.className = 'card'; c.id = 'card-'+p.id;
-    c.innerHTML = '<div class="card-header"><div class="card-dot" style="background:'+p.color+'"></div><div class="card-meta"><div class="card-title">'+p.title+'</div><div class="card-sub">'+p.sub+'</div></div><input type="checkbox" id="chk-'+p.id+'" checked style="margin-left:auto;cursor:pointer;width:18px;height:18px;" onchange="toggleP(\''+p.id+'\',this.checked)"/></div><div class="card-body placeholder" id="body-'+p.id+'">Waiting for content...</div><div class="card-actions" id="actions-'+p.id+'" style="display:none;"><button onclick="doCopy(\''+p.id+'\')">Copy</button><button onclick="doRegen(\''+p.id+'\')">Regenerate</button></div>';
+    c.innerHTML = '<div class="card-header"><div class="card-dot" style="background:'+p.color+'"></div><div class="card-meta"><div class="card-title">'+p.title+'</div><div class="card-sub">'+p.sub+'</div></div><input type="checkbox" id="chk-'+p.id+'" style="margin-left:auto;cursor:pointer;width:18px;height:18px;" onchange="toggleP(\''+p.id+'\',this.checked)"/></div><div class="card-body placeholder" id="body-'+p.id+'">Check this perspective to include it...</div><div class="card-actions" id="actions-'+p.id+'" style="display:none;"><button onclick="doCopy(\''+p.id+'\')">Copy</button><button onclick="doRegen(\''+p.id+'\')">Regenerate</button></div>';
     g.appendChild(c);
   });
 }
 
-var selected = new Set(P.map(function(p){return p.id;}));
+var selected = new Set();
 function toggleP(id, checked) { if(checked) selected.add(id); else selected.delete(id); }
 
 function updateCharCount() {
