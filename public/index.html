@@ -21,12 +21,14 @@
     @media (prefers-color-scheme: dark) {
       :root { --bg: #141412; --surface: #1E1D1A; --surface2: #252420; --border: #302E28; --border-strong: #4A4740; --text: #F0EDE6; --text-2: #A09C93; --text-3: #6A6660; --accent: #7EC99A; --accent-text: #141412; }
     }
-    body { font-family: var(--font); background: var(--bg); color: var(--text); min-height: 100vh; font-size: var(--font-size); line-height: var(--line-height); transition: background 0.2s, color 0.2s; }
+    html { font-size: var(--font-size); }
+    body { font-family: var(--font); background: var(--bg); color: var(--text); min-height: 100vh; font-size: 1rem; line-height: var(--line-height); transition: background 0.2s, color 0.2s; }
+    * { font-size: inherit; line-height: inherit; font-family: inherit; }
     header { border-bottom: 1px solid var(--border); padding: 0 2rem; position: relative; }
     .header-inner { max-width: 960px; margin: 0 auto; padding: 1.25rem 0; display: flex; align-items: center; gap: 1rem; }
-    .logo { font-size: 15px; font-weight: 500; } .logo span { color: var(--accent); }
-    .tagline { font-size: 13px; color: var(--text-3); }
-    .settings-btn { margin-left: auto; background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 7px 14px; font-size: 13px; cursor: pointer; color: var(--text-2); display: flex; align-items: center; gap: 6px; }
+    .logo { font-size: 0.94em; font-weight: 500; } .logo span { color: var(--accent); }
+    .tagline { font-size: 0.81em; color: var(--text-3); }
+    .settings-btn { margin-left: auto; background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 7px 14px; font-size: 0.81em; cursor: pointer; color: var(--text-2); display: flex; align-items: center; gap: 6px; }
     .settings-btn:hover { border-color: var(--border-strong); color: var(--text); }
 
     /* Settings Panel */
@@ -58,23 +60,23 @@
 
     main { max-width: 960px; margin: 0 auto; padding: 2.5rem 2rem 4rem; }
     .intro { margin-bottom: 2rem; }
-    .intro h1 { font-size: 28px; font-weight: 300; letter-spacing: -0.02em; line-height: 1.3; margin-bottom: 0.5rem; }
+    .intro h1 { font-size: 1.75em; font-weight: 300; letter-spacing: -0.02em; line-height: 1.3; margin-bottom: 0.5rem; }
     .intro h1 em { font-style: italic; }
-    .intro p { font-size: 15px; color: var(--text-2); max-width: 600px; }
+    .intro p { font-size: 0.94em; color: var(--text-2); max-width: 600px; }
     .input-section { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem; margin-bottom: 2rem; }
-    label.field-label { display: block; font-size: 12px; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-3); margin-bottom: 0.5rem; }
+    label.field-label { display: block; font-size: 0.75em; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-3); margin-bottom: 0.5rem; }
     textarea { width: 100%; min-height: 140px; font-family: var(--font); font-size: var(--font-size); color: var(--text); background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 12px 14px; resize: vertical; line-height: var(--line-height); }
     textarea:focus { outline: none; border-color: var(--border-strong); }
     textarea::placeholder { color: var(--text-3); font-style: italic; }
-    .char-count { font-size: 12px; color: var(--text-3); text-align: right; margin-top: 6px; }
+    .char-count { font-size: 0.75em; color: var(--text-3); text-align: right; margin-top: 6px; }
     .action-row { display: flex; align-items: center; justify-content: space-between; margin-top: 1.25rem; flex-wrap: wrap; gap: 0.75rem; }
     .btn-group { display: flex; gap: 8px; }
-    button { font-family: var(--font); font-size: 14px; font-weight: 500; cursor: pointer; border-radius: var(--radius-sm); padding: 9px 20px; border: 1px solid var(--border); background: var(--surface2); color: var(--text-2); }
+    button { font-family: var(--font); font-size: 0.875em; font-weight: 500; cursor: pointer; border-radius: var(--radius-sm); padding: 9px 20px; border: 1px solid var(--border); background: var(--surface2); color: var(--text-2); }
     button:hover { border-color: var(--border-strong); color: var(--text); }
     button:disabled { opacity: 0.4; cursor: not-allowed; }
     button.primary { background: var(--accent); color: var(--accent-text); border-color: transparent; }
     button.primary:hover { opacity: 0.85; }
-    .status-bar { display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--text-2); min-height: 20px; margin-bottom: 1.5rem; }
+    .status-bar { display: flex; align-items: center; gap: 10px; font-size: 0.81em; color: var(--text-2); min-height: 20px; margin-bottom: 1.5rem; }
     .status-bar.error { color: #B03030; }
     .progress-track { flex: 1; max-width: 200px; height: 3px; background: var(--border); border-radius: 2px; overflow: hidden; }
     .progress-fill { height: 100%; background: var(--accent); border-radius: 2px; width: 0%; transition: width 0.3s ease; }
@@ -87,8 +89,8 @@
     .card-header { display: flex; align-items: flex-start; gap: 10px; }
     .card-dot { width: 10px; height: 10px; border-radius: 50%; margin-top: 5px; flex-shrink: 0; }
     .card-meta { flex: 1; }
-    .card-title { font-size: 13px; font-weight: 500; }
-    .card-sub { font-size: 12px; color: var(--text-3); margin-top: 1px; }
+    .card-title { font-size: 0.81em; font-weight: 500; }
+    .card-sub { font-size: 0.75em; color: var(--text-3); margin-top: 1px; }
     .card-controls { display: flex; align-items: center; gap: 14px; margin-left: auto; flex-shrink: 0; }
     .drag-handle { display: flex; flex-direction: column; gap: 3px; cursor: grab; padding: 8px; opacity: 0.35; transition: opacity 0.15s; border-radius: 6px; }
     .drag-handle:hover { opacity: 0.8; background: var(--surface2); }
@@ -96,15 +98,15 @@
     .drag-handle .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--text-2); }
     @media (max-width: 600px) { .card-controls { gap: 18px; } .drag-handle { padding: 10px; } .drag-handle .dot { width: 8px; height: 8px; } }
     .card-body { font-size: var(--font-size); color: var(--text-2); line-height: var(--line-height); flex: 1; white-space: pre-wrap; }
-    .card-body.placeholder { color: var(--text-3); font-style: italic; font-size: 13px; white-space: normal; }
+    .card-body.placeholder { color: var(--text-3); font-style: italic; font-size: 0.81em; white-space: normal; }
     .typing-dots { display: inline-flex; gap: 3px; align-items: center; }
     .typing-dots span { width: 5px; height: 5px; border-radius: 50%; background: var(--text-3); animation: bounce 1.2s infinite; }
     .typing-dots span:nth-child(2) { animation-delay: 0.2s; } .typing-dots span:nth-child(3) { animation-delay: 0.4s; }
     @keyframes bounce { 0%, 80%, 100% { transform: translateY(0); opacity: 0.4; } 40% { transform: translateY(-4px); opacity: 1; } }
     .card-actions { display: flex; gap: 6px; border-top: 1px solid var(--border); padding-top: 0.75rem; }
-    .card-actions button { font-size: 12px; padding: 5px 12px; }
-    footer { border-top: 1px solid var(--border); padding: 1.5rem 2rem; text-align: center; font-size: 12px; color: var(--text-3); line-height: 1.8; }
-    .donate-btn { display: inline-block; background: var(--accent); color: var(--accent-text); font-size: 15px; font-weight: 500; padding: 14px 28px; border-radius: 10px; text-decoration: none; margin-top: 8px; }
+    .card-actions button { font-size: 0.75em; padding: 5px 12px; }
+    footer { border-top: 1px solid var(--border); padding: 1.5rem 2rem; text-align: center; font-size: 0.75em; color: var(--text-3); line-height: 1.8; }
+    .donate-btn { display: inline-block; background: var(--accent); color: var(--accent-text); font-size: 0.94em; font-weight: 500; padding: 14px 28px; border-radius: 10px; text-decoration: none; margin-top: 8px; }
   </style>
 </head>
 <body>
@@ -173,7 +175,7 @@
   <div class="setting-group">
     <div class="setting-label">Bold text</div>
     <div class="toggle-row">
-      <span style="font-size:13px;color:var(--text-2);">Make all text bold</span>
+      <span style="font-size:0.81em;color:var(--text-2);">Make all text bold</span>
       <label class="toggle">
         <input type="checkbox" id="bold-toggle" onchange="applyFont()">
         <span class="toggle-slider"></span>
@@ -196,7 +198,7 @@
     <textarea id="input-text" placeholder="Paste anything here..." oninput="updateCharCount()" maxlength="8000"></textarea>
     <div class="char-count" id="char-count">0 / 8,000</div>
     <div class="action-row">
-      <span style="font-size:13px;color:var(--text-2);">Check the perspectives you want</span>
+      <span style="font-size:0.81em;color:var(--text-2);">Check the perspectives you want</span>
       <div class="btn-group">
         <button onclick="clearAll()">Clear</button>
         <button class="primary" id="go-btn" onclick="runTranslate()">Translate</button>
@@ -264,16 +266,31 @@ function luminance(hex) {
   return 0.2126*r+0.7152*g+0.0722*b;
 }
 
-function complementaryGreen(bgHex) {
-  var lum = luminance(bgHex);
-  // On dark backgrounds use a lighter green, on light use a darker green
-  return lum < 0.4 ? '#7EC99A' : '#2D5A3D';
+function trueOpposite(hex) {
+  var c = hexToRgb(hex);
+  var r = 255 - c.r;
+  var g = 255 - c.g;
+  var b = 255 - c.b;
+  // If the opposite is too close to the background (grey tones), shift it toward the text color
+  var orig = luminance(hex);
+  var oppHex = '#'+[r,g,b].map(function(v){return v.toString(16).padStart(2,'0');}).join('');
+  var oppLum = luminance(oppHex);
+  // Ensure enough contrast — if diff is small, rotate hue by boosting dominant channel
+  var diff = Math.abs(orig - oppLum);
+  if (diff < 0.2) {
+    var max = Math.max(r,g,b);
+    if (max === r) { r = Math.min(255, r+60); g = Math.max(0, g-30); b = Math.max(0, b-30); }
+    else if (max === g) { g = Math.min(255, g+60); r = Math.max(0, r-30); b = Math.max(0, b-30); }
+    else { b = Math.min(255, b+60); r = Math.max(0, r-30); g = Math.max(0, g-30); }
+    oppHex = '#'+[r,g,b].map(function(v){return v.toString(16).padStart(2,'0');}).join('');
+  }
+  return oppHex;
 }
 
 function applyColors() {
   var bg = document.getElementById('color-bg').value;
   var text = document.getElementById('color-text').value;
-  var accent = complementaryGreen(bg);
+  var accent = trueOpposite(bg);
   var accentLum = luminance(accent);
   var accentText = accentLum > 0.4 ? '#1A1916' : '#FFFFFF';
   document.documentElement.style.setProperty('--bg', bg);
@@ -303,9 +320,22 @@ function applyFont() {
   var size = document.getElementById('font-size').value;
   var lh = document.getElementById('line-height').value;
   var bold = document.getElementById('bold-toggle').checked;
+  // Set on html element so everything inherits
+  document.documentElement.style.fontSize = size + 'px';
+  document.documentElement.style.fontFamily = font;
+  document.documentElement.style.lineHeight = lh;
   document.documentElement.style.setProperty('--font', font);
   document.documentElement.style.setProperty('--font-size', size+'px');
   document.documentElement.style.setProperty('--line-height', lh);
+  // Apply to every element
+  var all = document.querySelectorAll('*');
+  for (var i = 0; i < all.length; i++) {
+    var tag = all[i].tagName.toLowerCase();
+    if (tag !== 'input' && tag !== 'select') {
+      all[i].style.fontFamily = font;
+      all[i].style.lineHeight = lh;
+    }
+  }
   document.body.style.fontWeight = bold ? '700' : '400';
   document.getElementById('font-size-val').textContent = size+'px';
   document.getElementById('line-height-val').textContent = parseFloat(lh).toFixed(1);
@@ -343,7 +373,7 @@ function buildGrid() {
           '<div class="card-sub">'+p.sub+'</div>' +
         '</div>' +
         '<div class="card-controls">' +
-          '<input type="checkbox" id="chk-'+p.id+'" style="cursor:pointer;width:18px;height:18px;" onchange="toggleP(\''+p.id+'\',this.checked)"/>' +
+          '<input type="checkbox" id="chk-'+p.id+'" style="cursor:pointer;width:1.1em;height:1.1em;" onchange="toggleP(\''+p.id+'\',this.checked)"/>' +
           '<div class="drag-handle" title="Drag to reorder" onmousedown="startDrag(event,\''+p.id+'\')" ontouchstart="startDrag(event,\''+p.id+'\')">' +
             '<div class="dot"></div><div class="dot"></div><div class="dot"></div>' +
           '</div>' +
