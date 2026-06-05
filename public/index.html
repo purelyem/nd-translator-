@@ -10,10 +10,10 @@
     @media (prefers-color-scheme: dark) { :root { --bg: #141412; --surface: #1E1D1A; --surface2: #252420; --border: #302E28; --border-strong: #4A4740; --text: #F0EDE6; --text-2: #A09C93; --text-3: #6A6660; --accent: #7EC99A; } }
     body { font-family: system-ui, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; font-size: 16px; line-height: 1.6; }
     header { border-bottom: 1px solid var(--border); padding: 0 2rem; }
-    .header-inner { max-width: 900px; margin: 0 auto; padding: 1.25rem 0; display: flex; align-items: baseline; gap: 1rem; }
+    .header-inner { max-width: 960px; margin: 0 auto; padding: 1.25rem 0; display: flex; align-items: baseline; gap: 1rem; }
     .logo { font-size: 15px; font-weight: 500; } .logo span { color: var(--accent); }
     .tagline { font-size: 13px; color: var(--text-3); }
-    main { max-width: 900px; margin: 0 auto; padding: 2.5rem 2rem 4rem; }
+    main { max-width: 960px; margin: 0 auto; padding: 2.5rem 2rem 4rem; }
     .intro { margin-bottom: 2rem; }
     .intro h1 { font-size: 28px; font-weight: 300; letter-spacing: -0.02em; line-height: 1.3; margin-bottom: 0.5rem; }
     .intro h1 em { font-style: italic; }
@@ -36,11 +36,20 @@
     .progress-fill { height: 100%; background: var(--accent); border-radius: 2px; width: 0%; transition: width 0.3s ease; }
     .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(380px, 1fr)); gap: 1rem; }
     @media (max-width: 600px) { .grid { grid-template-columns: 1fr; } main { padding: 1.5rem 1rem 3rem; } }
-    .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.25rem; display: flex; flex-direction: column; gap: 0.75rem; }
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.25rem; display: flex; flex-direction: column; gap: 0.75rem; position: relative; transition: box-shadow 0.2s, opacity 0.2s; }
     .card.active { border-color: var(--border-strong); }
+    .card.dragging { opacity: 0.4; box-shadow: 0 8px 24px rgba(0,0,0,0.15); }
+    .card.drag-over { border-color: var(--accent); border-style: dashed; }
     .card-header { display: flex; align-items: flex-start; gap: 10px; }
     .card-dot { width: 10px; height: 10px; border-radius: 50%; margin-top: 5px; flex-shrink: 0; }
-    .card-meta { flex: 1; } .card-title { font-size: 13px; font-weight: 500; } .card-sub { font-size: 12px; color: var(--text-3); margin-top: 1px; }
+    .card-meta { flex: 1; } 
+    .card-title { font-size: 13px; font-weight: 500; } 
+    .card-sub { font-size: 12px; color: var(--text-3); margin-top: 1px; }
+    .card-controls { display: flex; align-items: center; gap: 8px; margin-left: auto; flex-shrink: 0; }
+    .drag-handle { display: flex; flex-direction: column; gap: 3px; cursor: grab; padding: 4px; opacity: 0.35; transition: opacity 0.15s; }
+    .drag-handle:hover { opacity: 0.8; }
+    .drag-handle:active { cursor: grabbing; }
+    .drag-handle .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--text-2); }
     .card-body { font-size: 14px; color: var(--text-2); line-height: 1.7; flex: 1; white-space: pre-wrap; }
     .card-body.placeholder { color: var(--text-3); font-style: italic; font-size: 13px; white-space: normal; }
     .typing-dots { display: inline-flex; gap: 3px; align-items: center; }
@@ -50,19 +59,20 @@
     .card-actions { display: flex; gap: 6px; border-top: 1px solid var(--border); padding-top: 0.75rem; }
     .card-actions button { font-size: 12px; padding: 5px 12px; }
     footer { border-top: 1px solid var(--border); padding: 1.5rem 2rem; text-align: center; font-size: 12px; color: var(--text-3); }
+    .hint { font-size: 12px; color: var(--text-3); margin-bottom: 1rem; display: flex; align-items: center; gap: 6px; }
   </style>
 </head>
 <body>
 <header>
   <div class="header-inner">
     <div class="logo">ND <span>Translator</span></div>
-    <div class="tagline">10 cognitive lenses for any content</div>
+    <div class="tagline">14 cognitive lenses for any content</div>
   </div>
 </header>
 <main>
   <div class="intro">
     <h1>Translate anything into <em>how you think.</em></h1>
-    <p>Paste a concept, question, paragraph, or lecture. Get it back reframed in 10 different cognitive styles built for neurodivergent minds.</p>
+    <p>Paste a concept, question, paragraph, or lecture. Check the perspectives you want and hit Translate. Drag cards to reorder them using the handle on the right.</p>
   </div>
   <div class="input-section">
     <label class="field-label">Your content</label>
@@ -98,21 +108,82 @@ var P = [
   {id:"literal",color:"#3A9060",title:"Literal processor",sub:"No idioms, everything explicit",prompt:"Reframe this for a literal processor. No idioms, no metaphors, no implied meaning. Say exactly what you mean. Be explicit about every step, every assumption, and every logical connection."},
   {id:"bigpicture",color:"#185FA5",title:"Big picture / systems thinker",sub:"Why it matters, larger context",prompt:"Reframe this for someone who needs the big picture first. Start with why this matters in the grand scheme. Show how it connects to larger systems or ideas. Answer what problem does this solve and what is its broader significance."},
   {id:"narrative",color:"#A03030",title:"Narrative processor",sub:"Story format, chronological",prompt:"Reframe this as a story with a clear beginning, middle, and end. Use chronological order. Introduce characters or actors, even abstract concepts can be personified. Use storytelling language like first, then, until finally."},
-  {id:"question",color:"#606060",title:"Question-based learner",sub:"Q and A format, curiosity-driven",prompt:"Reframe this as a series of questions and answers. Start with the most natural question someone new to this would ask. Answer it, then ask the next question that naturally follows. Format as Q: then A:"}
+  {id:"question",color:"#606060",title:"Question-based learner",sub:"Q and A format, curiosity-driven",prompt:"Reframe this as a series of questions and answers. Start with the most natural question someone new to this would ask. Answer it, then ask the next question that naturally follows. Format as Q: then A:"},
+  {id:"math",color:"#2D5A3D",title:"Math brain",sub:"Step-by-step, the why, and real life",prompt:"Break this math problem or concept into clear numbered steps showing all work. After each step, explain in plain simple language WHY that step works and what it means. If you use a formula, rule, or property, name it and briefly explain where it comes from or why it exists. Do not just apply it without context. Do not skip steps. Do not assume anything is obvious. At the very end, add a short section called Real World: that gives 2-3 concrete everyday examples of when and why someone would actually use this math."},
+  {id:"dyslexic",color:"#9B4DCA",title:"Dyslexic processor",sub:"Short sentences, simple words, clear layout",prompt:"Reframe this for a dyslexic reader. Use very short sentences. One idea per sentence. Use common everyday words instead of complex ones. Break content into small clearly labeled sections. Avoid walls of text. Use line breaks generously. Avoid words that look similar to each other. Keep rhythm consistent and predictable throughout."},
+  {id:"executive",color:"#D4762A",title:"Executive function support",sub:"Actionable steps, clear sequence, no assumptions",prompt:"Reframe this for someone with executive function challenges. Break everything into the smallest possible numbered action steps. Label each decision point clearly. Never assume the reader knows what to do next. State the order of operations explicitly. Use the format: First do this. Then do this. If this happens, do this. Make starting as easy as possible by making step 1 extremely small and obvious."},
+  {id:"dyscalculia",color:"#E05C8A",title:"Dyscalculia support",sub:"No assumed number sense, objects and grouping",prompt:"Reframe this math concept or problem for someone with dyscalculia. Never assume number sense. Replace abstract numbers with concrete objects, groups, or visual descriptions wherever possible. Explain what each number represents in real terms before using it. Use comparisons to familiar quantities. Avoid relying on memorized math facts. Focus on understanding what is happening rather than arriving at the answer quickly."}
 ];
+
+var order = P.map(function(p){return p.id;});
+var selected = new Set();
+var dragSrcId = null;
 
 function buildGrid() {
   var g = document.getElementById('grid');
   g.innerHTML = '';
-  P.forEach(function(p) {
+  order.forEach(function(id) {
+    var p = P.find(function(x){return x.id===id;});
     var c = document.createElement('div');
-    c.className = 'card'; c.id = 'card-'+p.id;
-    c.innerHTML = '<div class="card-header"><div class="card-dot" style="background:'+p.color+'"></div><div class="card-meta"><div class="card-title">'+p.title+'</div><div class="card-sub">'+p.sub+'</div></div><input type="checkbox" id="chk-'+p.id+'" style="margin-left:auto;cursor:pointer;width:18px;height:18px;" onchange="toggleP(\''+p.id+'\',this.checked)"/></div><div class="card-body placeholder" id="body-'+p.id+'">Check this perspective to include it...</div><div class="card-actions" id="actions-'+p.id+'" style="display:none;"><button onclick="doCopy(\''+p.id+'\')">Copy</button><button onclick="doRegen(\''+p.id+'\')">Regenerate</button></div>';
+    c.className = 'card';
+    c.id = 'card-'+p.id;
+    c.setAttribute('draggable','false');
+    c.innerHTML =
+      '<div class="card-header">' +
+        '<div class="card-dot" style="background:'+p.color+'"></div>' +
+        '<div class="card-meta">' +
+          '<div class="card-title">'+p.title+'</div>' +
+          '<div class="card-sub">'+p.sub+'</div>' +
+        '</div>' +
+        '<div class="card-controls">' +
+          '<input type="checkbox" id="chk-'+p.id+'" style="cursor:pointer;width:18px;height:18px;" onchange="toggleP(\''+p.id+'\',this.checked)"/>' +
+          '<div class="drag-handle" title="Drag to reorder" onmousedown="startDrag(event,\''+p.id+'\')" ontouchstart="startDrag(event,\''+p.id+'\')">' +
+            '<div class="dot"></div><div class="dot"></div><div class="dot"></div>' +
+          '</div>' +
+        '</div>' +
+      '</div>' +
+      '<div class="card-body placeholder" id="body-'+p.id+'">Check this perspective to include it...</div>' +
+      '<div class="card-actions" id="actions-'+p.id+'" style="display:none;">' +
+        '<button onclick="doCopy(\''+p.id+'\')">Copy</button>' +
+        '<button onclick="doRegen(\''+p.id+'\')">Regenerate</button>' +
+      '</div>';
+    c.addEventListener('dragover', function(e){ e.preventDefault(); c.classList.add('drag-over'); });
+    c.addEventListener('dragleave', function(){ c.classList.remove('drag-over'); });
+    c.addEventListener('drop', function(e){ e.preventDefault(); c.classList.remove('drag-over'); dropOn(p.id); });
     g.appendChild(c);
   });
 }
 
-var selected = new Set();
+function startDrag(e, id) {
+  var card = document.getElementById('card-'+id);
+  card.setAttribute('draggable','true');
+  dragSrcId = id;
+  card.addEventListener('dragstart', function handler(ev){
+    ev.dataTransfer.effectAllowed = 'move';
+    card.classList.add('dragging');
+    card.removeEventListener('dragstart', handler);
+  });
+  card.addEventListener('dragend', function handler(){
+    card.classList.remove('dragging');
+    card.setAttribute('draggable','false');
+    dragSrcId = null;
+    card.removeEventListener('dragend', handler);
+  });
+}
+
+function dropOn(targetId) {
+  if (!dragSrcId || dragSrcId === targetId) return;
+  var srcIdx = order.indexOf(dragSrcId);
+  var tgtIdx = order.indexOf(targetId);
+  order.splice(srcIdx, 1);
+  order.splice(tgtIdx, 0, dragSrcId);
+  buildGrid();
+  selected.forEach(function(id){
+    var chk = document.getElementById('chk-'+id);
+    if(chk) chk.checked = true;
+  });
+}
+
 function toggleP(id, checked) { if(checked) selected.add(id); else selected.delete(id); }
 
 function updateCharCount() {
@@ -122,11 +193,16 @@ function updateCharCount() {
 function clearAll() {
   document.getElementById('input-text').value = ''; updateCharCount();
   P.forEach(function(p) {
-    document.getElementById('body-'+p.id).className = 'card-body placeholder';
-    document.getElementById('body-'+p.id).textContent = 'Waiting for content...';
-    document.getElementById('actions-'+p.id).style.display = 'none';
-    document.getElementById('card-'+p.id).className = 'card';
+    var body = document.getElementById('body-'+p.id);
+    if(body) { body.className = 'card-body placeholder'; body.textContent = 'Check this perspective to include it...'; }
+    var actions = document.getElementById('actions-'+p.id);
+    if(actions) actions.style.display = 'none';
+    var card = document.getElementById('card-'+p.id);
+    if(card) card.className = 'card';
+    var chk = document.getElementById('chk-'+p.id);
+    if(chk) chk.checked = false;
   });
+  selected.clear();
   document.getElementById('status-bar').style.display = 'none';
 }
 
