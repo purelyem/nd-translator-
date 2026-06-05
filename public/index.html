@@ -4,15 +4,58 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Neurodivergent Perspective Translator</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Georgia&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://fonts.cdnfonts.com/css/open-dyslexic">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    :root { --bg: #FAFAF8; --surface: #FFFFFF; --surface2: #F3F2EE; --border: #E5E3DC; --border-strong: #C8C5BB; --text: #1A1916; --text-2: #5A5751; --text-3: #9A968E; --accent: #2D5A3D; --radius: 12px; --radius-sm: 8px; }
-    @media (prefers-color-scheme: dark) { :root { --bg: #141412; --surface: #1E1D1A; --surface2: #252420; --border: #302E28; --border-strong: #4A4740; --text: #F0EDE6; --text-2: #A09C93; --text-3: #6A6660; --accent: #7EC99A; } }
-    body { font-family: system-ui, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; font-size: 16px; line-height: 1.6; }
-    header { border-bottom: 1px solid var(--border); padding: 0 2rem; }
-    .header-inner { max-width: 960px; margin: 0 auto; padding: 1.25rem 0; display: flex; align-items: baseline; gap: 1rem; }
+    :root {
+      --bg: #FAFAF8; --surface: #FFFFFF; --surface2: #F3F2EE;
+      --border: #E5E3DC; --border-strong: #C8C5BB;
+      --text: #1A1916; --text-2: #5A5751; --text-3: #9A968E;
+      --accent: #2D5A3D; --accent-text: #FFFFFF;
+      --radius: 12px; --radius-sm: 8px;
+      --font: system-ui, sans-serif;
+      --font-size: 16px; --line-height: 1.65;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root { --bg: #141412; --surface: #1E1D1A; --surface2: #252420; --border: #302E28; --border-strong: #4A4740; --text: #F0EDE6; --text-2: #A09C93; --text-3: #6A6660; --accent: #7EC99A; --accent-text: #141412; }
+    }
+    body { font-family: var(--font); background: var(--bg); color: var(--text); min-height: 100vh; font-size: var(--font-size); line-height: var(--line-height); transition: background 0.2s, color 0.2s; }
+    header { border-bottom: 1px solid var(--border); padding: 0 2rem; position: relative; }
+    .header-inner { max-width: 960px; margin: 0 auto; padding: 1.25rem 0; display: flex; align-items: center; gap: 1rem; }
     .logo { font-size: 15px; font-weight: 500; } .logo span { color: var(--accent); }
     .tagline { font-size: 13px; color: var(--text-3); }
+    .settings-btn { margin-left: auto; background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 7px 14px; font-size: 13px; cursor: pointer; color: var(--text-2); display: flex; align-items: center; gap: 6px; }
+    .settings-btn:hover { border-color: var(--border-strong); color: var(--text); }
+
+    /* Settings Panel */
+    .settings-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 100; }
+    .settings-overlay.open { display: block; }
+    .settings-panel { position: fixed; top: 0; right: 0; height: 100vh; width: 320px; background: var(--surface); border-left: 1px solid var(--border); z-index: 101; padding: 2rem 1.5rem; overflow-y: auto; display: flex; flex-direction: column; gap: 1.5rem; transform: translateX(100%); transition: transform 0.25s ease; }
+    .settings-panel.open { transform: translateX(0); }
+    .settings-panel h2 { font-size: 16px; font-weight: 500; }
+    .settings-close { float: right; font-size: 18px; background: none; border: none; cursor: pointer; color: var(--text-2); padding: 0; margin-top: -4px; }
+    .setting-group { display: flex; flex-direction: column; gap: 8px; }
+    .setting-label { font-size: 12px; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-3); }
+    .color-row { display: flex; align-items: center; gap: 10px; }
+    .color-row input[type=color] { width: 40px; height: 36px; border: 1px solid var(--border); border-radius: var(--radius-sm); cursor: pointer; background: none; padding: 2px; }
+    .color-row span { font-size: 13px; color: var(--text-2); }
+    .font-select { font-family: inherit; font-size: 14px; background: var(--surface2); color: var(--text); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 8px 10px; width: 100%; cursor: pointer; }
+    .slider-row { display: flex; align-items: center; gap: 10px; }
+    .slider-row input[type=range] { flex: 1; accent-color: var(--accent); }
+    .slider-row span { font-size: 12px; color: var(--text-3); min-width: 32px; text-align: right; }
+    .toggle-row { display: flex; align-items: center; justify-content: space-between; }
+    .toggle { position: relative; width: 42px; height: 24px; }
+    .toggle input { opacity: 0; width: 0; height: 0; }
+    .toggle-slider { position: absolute; inset: 0; background: var(--border); border-radius: 24px; cursor: pointer; transition: 0.2s; }
+    .toggle-slider:before { content: ''; position: absolute; width: 18px; height: 18px; left: 3px; top: 3px; background: white; border-radius: 50%; transition: 0.2s; }
+    .toggle input:checked + .toggle-slider { background: var(--accent); }
+    .toggle input:checked + .toggle-slider:before { transform: translateX(18px); }
+    .reset-btn { font-size: 13px; color: var(--text-3); background: none; border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 7px 14px; cursor: pointer; width: 100%; }
+    .reset-btn:hover { color: var(--text); border-color: var(--border-strong); }
+    .divider { height: 1px; background: var(--border); }
+
     main { max-width: 960px; margin: 0 auto; padding: 2.5rem 2rem 4rem; }
     .intro { margin-bottom: 2rem; }
     .intro h1 { font-size: 28px; font-weight: 300; letter-spacing: -0.02em; line-height: 1.3; margin-bottom: 0.5rem; }
@@ -20,37 +63,39 @@
     .intro p { font-size: 15px; color: var(--text-2); max-width: 600px; }
     .input-section { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem; margin-bottom: 2rem; }
     label.field-label { display: block; font-size: 12px; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-3); margin-bottom: 0.5rem; }
-    textarea { width: 100%; min-height: 140px; font-family: inherit; font-size: 15px; color: var(--text); background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 12px 14px; resize: vertical; line-height: 1.65; }
+    textarea { width: 100%; min-height: 140px; font-family: var(--font); font-size: var(--font-size); color: var(--text); background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 12px 14px; resize: vertical; line-height: var(--line-height); }
     textarea:focus { outline: none; border-color: var(--border-strong); }
     textarea::placeholder { color: var(--text-3); font-style: italic; }
     .char-count { font-size: 12px; color: var(--text-3); text-align: right; margin-top: 6px; }
     .action-row { display: flex; align-items: center; justify-content: space-between; margin-top: 1.25rem; flex-wrap: wrap; gap: 0.75rem; }
     .btn-group { display: flex; gap: 8px; }
-    button { font-family: inherit; font-size: 14px; font-weight: 500; cursor: pointer; border-radius: var(--radius-sm); padding: 9px 20px; border: 1px solid var(--border); background: var(--surface2); color: var(--text-2); }
+    button { font-family: var(--font); font-size: 14px; font-weight: 500; cursor: pointer; border-radius: var(--radius-sm); padding: 9px 20px; border: 1px solid var(--border); background: var(--surface2); color: var(--text-2); }
     button:hover { border-color: var(--border-strong); color: var(--text); }
     button:disabled { opacity: 0.4; cursor: not-allowed; }
-    button.primary { background: var(--text); color: var(--bg); border-color: transparent; }
+    button.primary { background: var(--accent); color: var(--accent-text); border-color: transparent; }
+    button.primary:hover { opacity: 0.85; }
     .status-bar { display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--text-2); min-height: 20px; margin-bottom: 1.5rem; }
     .status-bar.error { color: #B03030; }
     .progress-track { flex: 1; max-width: 200px; height: 3px; background: var(--border); border-radius: 2px; overflow: hidden; }
     .progress-fill { height: 100%; background: var(--accent); border-radius: 2px; width: 0%; transition: width 0.3s ease; }
     .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(380px, 1fr)); gap: 1rem; }
-    @media (max-width: 600px) { .grid { grid-template-columns: 1fr; } main { padding: 1.5rem 1rem 3rem; } }
-    .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.25rem; display: flex; flex-direction: column; gap: 0.75rem; position: relative; transition: box-shadow 0.2s, opacity 0.2s; }
+    @media (max-width: 600px) { .grid { grid-template-columns: 1fr; } main { padding: 1.5rem 1rem 3rem; } header { padding: 0 1rem; } .settings-panel { width: 100%; } }
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.25rem; display: flex; flex-direction: column; gap: 0.75rem; transition: box-shadow 0.2s, opacity 0.2s; }
     .card.active { border-color: var(--border-strong); }
     .card.dragging { opacity: 0.4; box-shadow: 0 8px 24px rgba(0,0,0,0.15); }
     .card.drag-over { border-color: var(--accent); border-style: dashed; }
     .card-header { display: flex; align-items: flex-start; gap: 10px; }
     .card-dot { width: 10px; height: 10px; border-radius: 50%; margin-top: 5px; flex-shrink: 0; }
-    .card-meta { flex: 1; } 
-    .card-title { font-size: 13px; font-weight: 500; } 
+    .card-meta { flex: 1; }
+    .card-title { font-size: 13px; font-weight: 500; }
     .card-sub { font-size: 12px; color: var(--text-3); margin-top: 1px; }
-    .card-controls { display: flex; align-items: center; gap: 8px; margin-left: auto; flex-shrink: 0; }
-    .drag-handle { display: flex; flex-direction: column; gap: 3px; cursor: grab; padding: 4px; opacity: 0.35; transition: opacity 0.15s; }
-    .drag-handle:hover { opacity: 0.8; }
+    .card-controls { display: flex; align-items: center; gap: 14px; margin-left: auto; flex-shrink: 0; }
+    .drag-handle { display: flex; flex-direction: column; gap: 3px; cursor: grab; padding: 8px; opacity: 0.35; transition: opacity 0.15s; border-radius: 6px; }
+    .drag-handle:hover { opacity: 0.8; background: var(--surface2); }
     .drag-handle:active { cursor: grabbing; }
     .drag-handle .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--text-2); }
-    .card-body { font-size: 14px; color: var(--text-2); line-height: 1.7; flex: 1; white-space: pre-wrap; }
+    @media (max-width: 600px) { .card-controls { gap: 18px; } .drag-handle { padding: 10px; } .drag-handle .dot { width: 8px; height: 8px; } }
+    .card-body { font-size: var(--font-size); color: var(--text-2); line-height: var(--line-height); flex: 1; white-space: pre-wrap; }
     .card-body.placeholder { color: var(--text-3); font-style: italic; font-size: 13px; white-space: normal; }
     .typing-dots { display: inline-flex; gap: 3px; align-items: center; }
     .typing-dots span { width: 5px; height: 5px; border-radius: 50%; background: var(--text-3); animation: bounce 1.2s infinite; }
@@ -58,21 +103,93 @@
     @keyframes bounce { 0%, 80%, 100% { transform: translateY(0); opacity: 0.4; } 40% { transform: translateY(-4px); opacity: 1; } }
     .card-actions { display: flex; gap: 6px; border-top: 1px solid var(--border); padding-top: 0.75rem; }
     .card-actions button { font-size: 12px; padding: 5px 12px; }
-    footer { border-top: 1px solid var(--border); padding: 1.5rem 2rem; text-align: center; font-size: 12px; color: var(--text-3); }
-    .hint { font-size: 12px; color: var(--text-3); margin-bottom: 1rem; display: flex; align-items: center; gap: 6px; }
+    footer { border-top: 1px solid var(--border); padding: 1.5rem 2rem; text-align: center; font-size: 12px; color: var(--text-3); line-height: 1.8; }
+    .donate-btn { display: inline-block; background: var(--accent); color: var(--accent-text); font-size: 15px; font-weight: 500; padding: 14px 28px; border-radius: 10px; text-decoration: none; margin-top: 8px; }
   </style>
 </head>
 <body>
+
 <header>
   <div class="header-inner">
     <div class="logo">ND <span>Translator</span></div>
     <div class="tagline">14 cognitive lenses for any content</div>
+    <button class="settings-btn" onclick="openSettings()">⚙ Personalize</button>
   </div>
 </header>
+
+<!-- Settings Overlay -->
+<div class="settings-overlay" id="settings-overlay" onclick="closeSettings()"></div>
+<div class="settings-panel" id="settings-panel">
+  <div>
+    <h2>Personalize <button class="settings-close" onclick="closeSettings()">✕</button></h2>
+  </div>
+
+  <div class="setting-group">
+    <div class="setting-label">Background color</div>
+    <div class="color-row">
+      <input type="color" id="color-bg" value="#FAFAF8" oninput="applyColors()">
+      <span id="color-bg-val">#FAFAF8</span>
+    </div>
+  </div>
+
+  <div class="setting-group">
+    <div class="setting-label">Text color</div>
+    <div class="color-row">
+      <input type="color" id="color-text" value="#1A1916" oninput="applyColors()">
+      <span id="color-text-val">#1A1916</span>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="setting-group">
+    <div class="setting-label">Font</div>
+    <select class="font-select" id="font-select" onchange="applyFont()">
+      <option value="system-ui, sans-serif">System default</option>
+      <option value="'Atkinson Hyperlegible', sans-serif">Atkinson Hyperlegible</option>
+      <option value="'Open-Dyslexic', sans-serif">OpenDyslexic</option>
+      <option value="Arial, sans-serif">Arial</option>
+      <option value="Georgia, serif">Georgia</option>
+      <option value="'Comic Sans MS', cursive">Comic Sans</option>
+    </select>
+  </div>
+
+  <div class="setting-group">
+    <div class="setting-label">Font size</div>
+    <div class="slider-row">
+      <input type="range" id="font-size" min="12" max="24" value="16" oninput="applyFont()">
+      <span id="font-size-val">16px</span>
+    </div>
+  </div>
+
+  <div class="setting-group">
+    <div class="setting-label">Line spacing</div>
+    <div class="slider-row">
+      <input type="range" id="line-height" min="1.2" max="2.4" step="0.1" value="1.65" oninput="applyFont()">
+      <span id="line-height-val">1.7</span>
+    </div>
+  </div>
+
+  <div class="setting-group">
+    <div class="setting-label">Bold text</div>
+    <div class="toggle-row">
+      <span style="font-size:13px;color:var(--text-2);">Make all text bold</span>
+      <label class="toggle">
+        <input type="checkbox" id="bold-toggle" onchange="applyFont()">
+        <span class="toggle-slider"></span>
+      </label>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <button class="reset-btn" onclick="resetSettings()">Reset to defaults</button>
+</div>
+
 <main>
   <div class="intro">
     <h1>Translate anything into <em>how you think.</em></h1>
-    <p>Paste a concept, question, paragraph, or lecture. Check the perspectives you want and hit Translate. Drag cards to reorder them using the handle on the right.</p>
+    <p>Paste a concept, question, paragraph, or lecture. Check the perspectives you want and hit Translate. Drag cards by the handle to reorder them.</p>
   </div>
   <div class="input-section">
     <label class="field-label">Your content</label>
@@ -92,11 +209,13 @@
   </div>
   <div class="grid" id="grid"></div>
 </main>
+
 <footer>
-  Built for neurodivergent communities. Powered by Claude (Anthropic).
+  Built for neurodivergent communities. By neurodivergent individuals.
   <br><br>
-  <a href="https://paypal.me/NPTdonate?country.x=US&locale.x=en_US" target="_blank" rel="noopener" style="display:inline-block;background:#2D5A3D;color:#fff;font-size:15px;font-weight:500;padding:14px 28px;border-radius:10px;text-decoration:none;margin-top:8px;">This is a free tool that costs ~$0.01 per use to run. If it helped you, please contribute what you can — Click Here!</a>
+  <a href="https://paypal.me/NPTdonate?country.x=US&locale.x=en_US" target="_blank" rel="noopener" class="donate-btn">This is a free tool that costs ~$0.01 per use to run. If it helped you, please contribute what you can — Click Here!</a>
 </footer>
+
 <script>
 var P = [
   {id:"visual",color:"#2A9D5C",title:"Visual / spatial thinker",sub:"Metaphors, spatial relationships",prompt:"Reframe this for a visual/spatial thinker. Use vivid spatial metaphors and describe relationships as physical structures or maps. Make the reader see it in their mind. Use imagine and picture language throughout."},
@@ -109,9 +228,9 @@ var P = [
   {id:"bigpicture",color:"#185FA5",title:"Big picture / systems thinker",sub:"Why it matters, larger context",prompt:"Reframe this for someone who needs the big picture first. Start with why this matters in the grand scheme. Show how it connects to larger systems or ideas. Answer what problem does this solve and what is its broader significance."},
   {id:"narrative",color:"#A03030",title:"Narrative processor",sub:"Story format, chronological",prompt:"Reframe this as a story with a clear beginning, middle, and end. Use chronological order. Introduce characters or actors, even abstract concepts can be personified. Use storytelling language like first, then, until finally."},
   {id:"question",color:"#606060",title:"Question-based learner",sub:"Q and A format, curiosity-driven",prompt:"Reframe this as a series of questions and answers. Start with the most natural question someone new to this would ask. Answer it, then ask the next question that naturally follows. Format as Q: then A:"},
-  {id:"math",color:"#2D5A3D",title:"Math brain",sub:"Step-by-step, the why, and real life",prompt:"Break this math problem or concept into clear numbered steps showing all work. After each step, explain in plain simple language WHY that step works and what it means. If you use a formula, rule, or property, name it and briefly explain where it comes from or why it exists. Do not just apply it without context. Do not skip steps. Do not assume anything is obvious. At the very end, add a short section called Real World: that gives 2-3 concrete everyday examples of when and why someone would actually use this math."},
-  {id:"dyslexic",color:"#9B4DCA",title:"Dyslexic processor",sub:"Short sentences, simple words, clear layout",prompt:"Reframe this for a dyslexic reader. Use very short sentences. One idea per sentence. Use common everyday words instead of complex ones. Break content into small clearly labeled sections. Avoid walls of text. Use line breaks generously. Avoid words that look similar to each other. Keep rhythm consistent and predictable throughout."},
-  {id:"executive",color:"#D4762A",title:"Executive function support",sub:"Actionable steps, clear sequence, no assumptions",prompt:"Reframe this for someone with executive function challenges. Break everything into the smallest possible numbered action steps. Label each decision point clearly. Never assume the reader knows what to do next. State the order of operations explicitly. Use the format: First do this. Then do this. If this happens, do this. Make starting as easy as possible by making step 1 extremely small and obvious."},
+  {id:"math",color:"#2D5A3D",title:"Math brain",sub:"Step-by-step, the why, and real life",prompt:"Break this math problem or concept into clear numbered steps showing all work. After each step, explain in plain simple language WHY that step works and what it means. If you use a formula, rule, or property, name it and briefly explain where it comes from or why it exists. Do not just apply it without context. Do not skip steps. Do not assume anything is obvious. At the very end, add a short section called Real World that gives 2-3 concrete everyday examples of when and why someone would actually use this math."},
+  {id:"dyslexic",color:"#9B4DCA",title:"Dyslexic processor",sub:"Short sentences, simple words, clear layout",prompt:"Reframe this for a dyslexic reader. Use very short sentences. One idea per sentence. Use common everyday words instead of complex ones. Break content into small clearly labeled sections. Avoid walls of text. Use line breaks generously. Keep rhythm consistent and predictable throughout."},
+  {id:"executive",color:"#D4762A",title:"Executive function support",sub:"Actionable steps, clear sequence, no assumptions",prompt:"Reframe this for someone with executive function challenges. Break everything into the smallest possible numbered action steps. Label each decision point clearly. Never assume the reader knows what to do next. State the order of operations explicitly. Use the format: First do this. Then do this. If this happens do this. Make starting as easy as possible by making step 1 extremely small and obvious."},
   {id:"dyscalculia",color:"#E05C8A",title:"Dyscalculia support",sub:"No assumed number sense, objects and grouping",prompt:"Reframe this math concept or problem for someone with dyscalculia. Never assume number sense. Replace abstract numbers with concrete objects, groups, or visual descriptions wherever possible. Explain what each number represents in real terms before using it. Use comparisons to familiar quantities. Avoid relying on memorized math facts. Focus on understanding what is happening rather than arriving at the answer quickly."}
 ];
 
@@ -119,14 +238,102 @@ var order = P.map(function(p){return p.id;});
 var selected = new Set();
 var dragSrcId = null;
 
+// ── Settings ──
+function openSettings() {
+  document.getElementById('settings-overlay').classList.add('open');
+  document.getElementById('settings-panel').classList.add('open');
+}
+function closeSettings() {
+  document.getElementById('settings-overlay').classList.remove('open');
+  document.getElementById('settings-panel').classList.remove('open');
+}
+
+function hexToRgb(hex) {
+  var r = parseInt(hex.slice(1,3),16);
+  var g = parseInt(hex.slice(3,5),16);
+  var b = parseInt(hex.slice(5,7),16);
+  return {r:r,g:g,b:b};
+}
+
+function luminance(hex) {
+  var c = hexToRgb(hex);
+  var r = c.r/255; var g = c.g/255; var b = c.b/255;
+  r = r<0.03928?r/12.92:Math.pow((r+0.055)/1.055,2.4);
+  g = g<0.03928?g/12.92:Math.pow((g+0.055)/1.055,2.4);
+  b = b<0.03928?b/12.92:Math.pow((b+0.055)/1.055,2.4);
+  return 0.2126*r+0.7152*g+0.0722*b;
+}
+
+function complementaryGreen(bgHex) {
+  var lum = luminance(bgHex);
+  // On dark backgrounds use a lighter green, on light use a darker green
+  return lum < 0.4 ? '#7EC99A' : '#2D5A3D';
+}
+
+function applyColors() {
+  var bg = document.getElementById('color-bg').value;
+  var text = document.getElementById('color-text').value;
+  var accent = complementaryGreen(bg);
+  var accentLum = luminance(accent);
+  var accentText = accentLum > 0.4 ? '#1A1916' : '#FFFFFF';
+  document.documentElement.style.setProperty('--bg', bg);
+  document.documentElement.style.setProperty('--surface', bg);
+  document.documentElement.style.setProperty('--surface2', shiftColor(bg, 8));
+  document.documentElement.style.setProperty('--text', text);
+  document.documentElement.style.setProperty('--text-2', shiftColor(text, 40));
+  document.documentElement.style.setProperty('--text-3', shiftColor(text, 80));
+  document.documentElement.style.setProperty('--accent', accent);
+  document.documentElement.style.setProperty('--accent-text', accentText);
+  document.getElementById('color-bg-val').textContent = bg;
+  document.getElementById('color-text-val').textContent = text;
+}
+
+function shiftColor(hex, amount) {
+  var c = hexToRgb(hex);
+  var lum = luminance(hex);
+  var d = lum > 0.5 ? -amount : amount;
+  var r = Math.min(255,Math.max(0,c.r+d));
+  var g = Math.min(255,Math.max(0,c.g+d));
+  var b = Math.min(255,Math.max(0,c.b+d));
+  return '#'+[r,g,b].map(function(v){return v.toString(16).padStart(2,'0');}).join('');
+}
+
+function applyFont() {
+  var font = document.getElementById('font-select').value;
+  var size = document.getElementById('font-size').value;
+  var lh = document.getElementById('line-height').value;
+  var bold = document.getElementById('bold-toggle').checked;
+  document.documentElement.style.setProperty('--font', font);
+  document.documentElement.style.setProperty('--font-size', size+'px');
+  document.documentElement.style.setProperty('--line-height', lh);
+  document.body.style.fontWeight = bold ? '700' : '400';
+  document.getElementById('font-size-val').textContent = size+'px';
+  document.getElementById('line-height-val').textContent = parseFloat(lh).toFixed(1);
+}
+
+function resetSettings() {
+  document.getElementById('color-bg').value = '#FAFAF8';
+  document.getElementById('color-text').value = '#1A1916';
+  document.getElementById('font-select').value = 'system-ui, sans-serif';
+  document.getElementById('font-size').value = '16';
+  document.getElementById('line-height').value = '1.65';
+  document.getElementById('bold-toggle').checked = false;
+  document.documentElement.removeAttribute('style');
+  document.body.style.fontWeight = '';
+  document.getElementById('font-size-val').textContent = '16px';
+  document.getElementById('line-height-val').textContent = '1.7';
+  document.getElementById('color-bg-val').textContent = '#FAFAF8';
+  document.getElementById('color-text-val').textContent = '#1A1916';
+}
+
+// ── Grid ──
 function buildGrid() {
   var g = document.getElementById('grid');
   g.innerHTML = '';
   order.forEach(function(id) {
     var p = P.find(function(x){return x.id===id;});
     var c = document.createElement('div');
-    c.className = 'card';
-    c.id = 'card-'+p.id;
+    c.className = 'card'; c.id = 'card-'+p.id;
     c.setAttribute('draggable','false');
     c.innerHTML =
       '<div class="card-header">' +
